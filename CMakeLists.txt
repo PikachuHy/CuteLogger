@@ -4,8 +4,11 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(CuteLogger LANGUAGES CXX)
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Core5Compat REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Core5Compat REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core5Compat REQUIRED)
+endif()
 ADD_DEFINITIONS(-DCUTELOGGER_LIBRARY)
 add_library(CuteLogger SHARED "")
 target_sources(CuteLogger PRIVATE
@@ -18,8 +21,10 @@ target_sources(CuteLogger PRIVATE
         )
 target_compile_definitions(CuteLogger PRIVATE -DCUTELOGGER_LIBRARY)
 target_include_directories(CuteLogger PUBLIC include)
-target_link_libraries(CuteLogger PUBLIC Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Core5Compat)
-
+target_link_libraries(CuteLogger PUBLIC Qt${QT_VERSION_MAJOR}::Core)
+if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+  target_link_libraries(CuteLogger PUBLIC Qt${QT_VERSION_MAJOR}::Core5Compat)
+endif()
 # OutputDebugAppender is only for Windows systems
 if(WIN32)
   target_sources(CuteLogger PRIVATE
